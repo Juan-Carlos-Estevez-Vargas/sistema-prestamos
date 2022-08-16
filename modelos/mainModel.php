@@ -24,4 +24,38 @@
             $sql->execute();
             return $sql;
         }
+
+        /**
+         * Se encarga de encriptar textos planos (parámetros, id's, etc).
+         */
+        public function encryption($string) {
+            $output = FALSE;
+            $key = hash('sha256', SECRET_KEY);
+            $iv = substr(hash('sha256', SECRET_ID), 0, 16);
+            $output = openssl_encrypt($string, METHOD, $key, 0, $iv);
+            $output = base64_encode($output);
+            return $output;
+        }
+
+        /**
+         * Se encarga de desencriptar textos planos (parámetros, id's, etc).
+         */
+        protected static function decryption($string) {
+            $key = hash('sha256', SECRET_KEY);
+            $iv = substr(hash('sha256', SECRET_ID), 0, 16);
+            $output = openssl_decrypt(base64_decode($string), METHOD, $key, 0, $iv);
+            return $output;
+        }
+
+        /**
+         * Genera códigos aleatorios.
+         */
+        protected static function generar_codigo_aleatorio($letra, $longitud, $numero) {
+            for ( $i = 1; $i <= $longitud; $i++ ) {
+                $aleatorio = rand(0, 9);
+                $letra .= $aleatorio;
+            }
+            return $letra."-".$numero;
+        }
+
     }
