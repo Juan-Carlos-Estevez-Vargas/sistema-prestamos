@@ -58,6 +58,10 @@
             return $letra."-".$numero;
         }
 
+        /**
+         * Se encarga de limpiar cadenas de caracteres para evitar ataques de 
+         * inyección SQL.
+         */
         protected static function limpiar_cadena($cadena) {
             $cadena = trim($cadena); # Elimina espacios innecesarios.
             $cadena = stripslashes($cadena); # Elimina slash invertidos.
@@ -87,6 +91,21 @@
             $cadena = stripslashes($cadena); # Elimina slash invertidos.
             $cadena = trim($cadena); # Elimina espacios innecesarios.
             return $cadena;
+        }
+
+        /**
+         * Función para validar datos.
+         */
+        protected static function verificar_datos($filtro, $cadena) {
+            return preg_match("/^".$filtro."$/", $cadena) ? false : true;
+        }
+
+        /**
+         * Verifica y valida las fechas.
+         */
+        protected static function verificar_fecha($fecha) {
+            $valores = explode("-", $fecha);
+            return count($valores) == 3 && checkdate($valores[1], $valores[2], $valores[3]) ? false : true;
         }
 
     }
