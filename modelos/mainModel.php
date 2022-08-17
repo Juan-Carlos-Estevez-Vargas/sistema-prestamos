@@ -135,8 +135,24 @@
                             </li>';
             }
 
+            /* Colocando el ícono de las páginas con colorcito con la clase active.*/
+            $ci = 0;
+            for ( $i = $pagina; $i <= $Npaginas; $i++ ) {
+                if ( $ci >= $botones ) break;
+                if ( $pagina == $i ) {
+                    $tabla .= '<li class="page-item">
+                                    <a class="page-link active" href="'.$url.$i.'/">'.$i.'</a>
+                                </li>';
+                } else {
+                    $tabla .= '<li class="page-item">
+                                    <a class="page-link" href="'.$url.$i.'/">'.$i.'</a>
+                                </li>';
+                }
+                $ci++;
+            }
+
             /* Adición o eliminación de botones para ir una página adelante y botón 
-                para ir a la última página. */
+                para ir a la últimaz página. */
             if ( $pagina == $Npaginas ) {
                 $tabla .= '<li class="page-item disabled">
                                 <a class="page-link">
