@@ -1,5 +1,13 @@
+/* Recuperación de todos los formularios en la aplicación que contengan la
+   clase .FormularioAjax. */
 const formularios_ajax = document.querySelectorAll(".FormularioAjax");
 
+/**
+ * Se encarga de definir algunas configuraciones para las alertas personalizadas, así
+ * como también, se encarga de enviar los datos del formulario por medio de ajax.
+ * 
+ * @param {*} e evento del formulario.
+ */
 function enviar_formulario_ajax(e) {
   e.preventDefault();
 
@@ -46,6 +54,9 @@ function enviar_formulario_ajax(e) {
   });
 }
 
+/* Por cada formulario encontrado en el aplicativo, se agrega un escuchador de eventos de tipo submit
+   para que cada que se presione dicho evento se envíen los datos del formulario y se muestren las
+   respectivas alertas. */
 formularios_ajax.forEach((formularios) => {
   formularios.addEventListener("submit", enviar_formulario_ajax);
 });
