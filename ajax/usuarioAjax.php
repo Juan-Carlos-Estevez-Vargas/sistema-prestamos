@@ -2,10 +2,20 @@
     $peticionAjax = true;
     require_once "../config/app.php";
 
-    if () {
-        // Incluyendo el controlador
+    if ( isset($_POST["usuario_dni_reg"]) ) {
+
+        /**
+         * Incluyendo el controlador
+         */ 
         require_once "../controladores/usuarioControlador.php";
         $ins_usuario = new usuarioControlador();
+
+        /**
+         * Agregando un usuario.
+         */
+        if ( isset($_POST["usuario_dni_reg"]) && isset($_POST["usuario_nombre_reg"]) ) {
+            echo $ins_usuario->agregar_usuario_controlador();
+        }
     } else {
         session_start(['name'=>'SPM']);
         session_unset();
