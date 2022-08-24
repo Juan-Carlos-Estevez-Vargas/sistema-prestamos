@@ -124,5 +124,57 @@
                 exit();
             }
 
-        }
+            /**
+             * Comprobando los campos UNIQUE de la base de datos, es decir, que no existan repetidos.
+             */
+            $check_dni = mainModel::ejecutar_consulta_simple("SELECT usuario_dni FROM usuario WHERE usuario_dni = '$dni'");
+            if ( $check_dni->rowCount() > 0 ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "El DNI ingresado ya se encuentra registrado en el sistema",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            }
+
+            $check_usuario = mainModel::ejecutar_consulta_simple("SELECT usuario_usuario FROM usuario WHERE usuario_usuario = '$usuario'");
+            if ( $check_usuario->rowCount() > 0 ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "El NOMBRE DE USUARIO ingresado ya se encuentra registrado en el sistema",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            }
+
+            if ( $email != "" ){
+                if ( filter_var($email, FILTER_VALIDATE_EMAIL ) ) {
+                    $check_email = mainModel::ejecutar_consulta_simple("SELECT usuario_email FROM usuario WHERE usuario_email = '$email'");
+                    if ( $check_email->rowCount() > 0 ) {
+                        $alerta = [
+                            "Alerta" => "simple",
+                            "Titulo" => "Ocurrió un error inesperado",
+                            "Texto" => "El EMAIL ingresado ya se encuentra registrado en el sistema",
+                            "Tipo" => "error"
+                        ];
+                        echo json_encode($alerta);
+                        exit();
+                    }
+                } else {
+                    $alerta = [
+                        "Alerta" => "simple",
+                        "Titulo" => "Ocurrió un error inesperado",
+                        "Texto" => "Ha ingresado un correo no válido",
+                        "Tipo" => "error"
+                    ];
+                    echo json_encode($alerta);
+                    exit();
+                }
+            }
+            
+        } /** Fin del controlador  */
     }
