@@ -9,6 +9,8 @@
          */
         public function agregar_usuario_controlador() {
 
+            # ---------- Validación de datos pre inserción. ------------- #
+
             /**
              * Utilizando la función para limpiar los campos del formulario 'user-new-view.php'
              * de posible inyección SQL y almacenando el valor en variables.
@@ -175,6 +177,62 @@
                     exit();
                 }
             }
+
+            /** Comprobando la contraseña y repetir contraseña. */
+            if ( $clave1 != $clave2 ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "Las CONTRASEÑAS no coinciden",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            } else $clave = mainModel::encryption($clave1);
+
+            /** Comprobando privilegio */
+            if ( $privilegio < 1 || $privilegio > 3 ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "El PRIVILEGIO seleccionado no es válido",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            }
+            # ---------- Fin de la validación de datos post inserción. ------------- #
+
+            $datos_usuario_reg = [
+                "DNI" => $dni,
+                "nombre" => $nombre,
+                "apellido" => $apellido,
+                "telefono" => $telefono,
+                "direccion" => $direccion,
+                "email" => $email,
+                "usuario" => $usuario,
+                "clave" => $clave,
+                "estado" => "Activa",
+                "privilegio" => $privilegio
+            ];
+
+            $agregar_usuario = usuarioModelo::agregar_usuario_modelo($datos_usuario_reg);
+
+            if ( $agregar_usuario->rowCount() == 1 ) {
+                $alerta = [
+                    "Alerta" => "limpiar",
+                    "Titulo" => "Usuario registrado correctamente",
+                    "Texto" => "Los datos del usuario han sido registrados con éxito",
+                    "Tipo" => "success"
+                ];
+            } else {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "No hemos podido registrar el usuario",
+                    "Tipo" => "error"
+                ];
+            } echo json_encode($alerta);
             
         } /** Fin del controlador  */
     }
