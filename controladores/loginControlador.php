@@ -13,8 +13,11 @@
              * Utilizando la función para limpiar los campos del formulario 'login-view.php'
              * de posible inyección SQL y almacenando el valor en variables.
              */
-            $usuario = mainModel::limpiarCadena($_POST["usuario_login"]);
-            $clave = mainModel::limpiarCadena($_POST["clave_login"]);
+            $usuario = mainModel::limpiar_cadena($_POST["usuario_login"]);
+            $clave = mainModel::limpiar_cadena($_POST["clave_login"]);
+
+            echo $usuario;
+            echo $clave;
 
             /**
              * Comprobando que los datos requeridos del formulario 'login-view.php' 
@@ -26,24 +29,26 @@
                             title: 'Ocurrió un error inesperado',
                             text: 'No has llenado todos los campos solicitados',
                             type: 'error',
-                            confirmButtonText 'Aceptar'
+                            confirmButtonText: 'Aceptar'
                         });
                     </script>";
+                exit();
             }
 
             /**
              * Verificando la integridad de los datos, es decir, validando el tipo y tamaño de caracteres
              * perimitidos en el formulario.
              */ 
-            if ( mainModel::verificar_datos("[a-zA-Z0-9]{10,35}", $usuario) ) {
+            if ( mainModel::verificar_datos("[a-zA-Z0-9]{1,35}", $usuario) ) {
                 echo "<script>
                         Swal.fire({
                             title: 'Ocurrió un error inesperado',
                             text: 'El campo NOMBRE DE USUARIO no concide con el formato solicitado',
                             type: 'error',
-                            confirmButtonText 'Aceptar'
+                            confirmButtonText: 'Aceptar'
                         });
                     </script>";
+                exit();
             }
 
             if ( mainModel::verificar_datos("[a-zA-Z0-9$@.-]{7,100}", $clave) ) {
@@ -52,19 +57,20 @@
                             title: 'Ocurrió un error inesperado',
                             text: 'La CLAVE o CONTRASEÑA no concide con el formato solicitado',
                             type: 'error',
-                            confirmButtonText 'Aceptar'
+                            confirmButtonText: 'Aceptar'
                         });
                     </script>";
+                exit();
             }
 
             /**
              * Encriptación de la contraseña.
              */
-            $clave = mainModel::encryption();
+            $clave_encriptada = mainModel::encryption($clave);
 
             $datos_login = [
                 "usuario" => $usuario,
-                "clave" => $clave
+                "clave" => $clave_encriptada
             ];
 
             /** Iniciando sesión en el sistema utilizando variables de sesión. */
@@ -88,9 +94,10 @@
                             title: 'Ocurrió un error inesperado',
                             text: 'El USUARIO o CLAVE son incorrectos',
                             type: 'error',
-                            confirmButtonText 'Aceptar'
+                            confirmButtonText: 'Aceptar'
                         });
                     </script>";
+                exit();
             }
         }
 

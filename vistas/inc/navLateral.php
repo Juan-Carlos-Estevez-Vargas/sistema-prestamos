@@ -9,8 +9,8 @@
         alt="Avatar"
       />
       <figcaption class="roboto-medium text-center">
-        Juank Estevez <br /><small class="roboto-condensed-light"
-          >Web Developer</small
+        <?php echo $_SESSION["nombre_spm"]." ".$_SESSION["apellido_spm"]; ?> <br /><small class="roboto-condensed-light"
+          ><?php echo $_SESSION["usuario_spm"]; ?></small
         >
       </figcaption>
     </figure>
