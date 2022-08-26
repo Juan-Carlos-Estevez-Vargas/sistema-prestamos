@@ -18,11 +18,18 @@
 
       $vistas = $IV->obtener_vistas_controlador();
 
-      if ( $vistas == "login" || $vistas == "404" ) {
-        require_once "./vistas/contenidos/".$vistas."-view.php";
-      } else {
+      if ( $vistas == "login" || $vistas == "404" ) require_once "./vistas/contenidos/".$vistas."-view.php";
+      else {
         /** Inicio de sesión. */
         session_start(['name'=>'SPM']);
+        require_once "./controladores/loginControlador.php";
+        $login_controlador = new loginControlador();
+
+        /** Si no se ha iniciado sesión se debe cerrar la misma. */
+        if ( !isset($_SESSION["token_spm"]) || !isset( $_SESSION["nombre_spm"]) || !isset($_SESSION["privilegio_spm"]) || !isset($_SESSION["id_spm"]) ) {
+          echo $login_controlador->forzar_cierre_sesion_controlador();
+          exit();
+        }
     ?>
 
     <!-- Main container -->

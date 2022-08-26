@@ -101,4 +101,14 @@
             }
         }
 
+        /**
+         * Controlador encargado de forzar el cierre de sesión en el sistema.
+         */
+        public function forzar_cierre_sesion_controlador() {
+            session_unset();
+            session_destroy();
+            if ( headers_sent() ) return "<script> window.location.href = '".SERVERURL."login/'; </script>";
+            else header("Location: ".SERVERURL."login/");
+        }
+
     }
