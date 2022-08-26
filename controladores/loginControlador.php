@@ -66,6 +66,32 @@
                 "usuario" => $usuario,
                 "clave" => $clave
             ];
+
+            /** Iniciando sesión en el sistema utilizando variables de sesión. */
+            $datos_cuenta = loginModelo::iniciar_sesion_modelo($datos_login);
+            if ( $datos_cuenta->rowCount() == 1 ) {
+                $row = $datos_cuenta->fetch();
+
+                /** Creando variables de sesión. */
+                session_start(['name'=>'SPM']);
+                $_SESSION["id_spm"] = $row["usuario_id"];
+                $_SESSION["nombre_spm"] = $row["usuario_nombre"];
+                $_SESSION["apellido_spm"] = $row["usuario_apellido"];
+                $_SESSION["usuario_spm"] = $row["usuario_usuario"];
+                $_SESSION["privilegio_spm"] = $row["usuario_privilegio"];
+                $_SESSION["token_spm"] = md5(uniqid(mt_rand(), true));
+
+                return header("Location: ".SERVERURL."home/");
+            } else {
+                echo "<script>
+                        Swal.fire({
+                            title: 'Ocurrió un error inesperado',
+                            text: 'El USUARIO o CLAVE son incorrectos',
+                            type: 'error',
+                            confirmButtonText 'Aceptar'
+                        });
+                    </script>";
+            }
         }
 
     }
