@@ -47,6 +47,7 @@
     </main>
 
     <?php 
+      include "./vistas/inc/LogOut.php"; 
       }
       include "./vistas/inc/script.php"; 
     ?>
