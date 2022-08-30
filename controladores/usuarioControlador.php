@@ -272,6 +272,69 @@
             $total = (int) $total->fetchColumn();
 
             $n_paginas = ceil($total / $registros);
+
+            $tabla .= '<div class="table-responsive">
+                        <table class="table table-dark table-sm">
+                            <thead>
+                                <tr class="text-center roboto-medium">
+                                    <th>#</th>
+                                    <th>DNI</th>
+                                    <th>NOMBRE</th>
+                                    <th>TELÉFONO</th>
+                                    <th>USUARIO</th>
+                                    <th>EMAIL</th>
+                                    <th>ACTUALIZAR</th>
+                                    <th>ELIMINAR</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
             
+            if ( $total >= 1 && $pagina <= $n_paginas ) {
+                $contador = $inicio + 1;
+                foreach( $datos as $rows ) {
+                    $tabla.='<tr class="text-center" >
+                                <td>'.$contador.'</td>
+                                <td>'.$rows['usuario_dni'].'</td>
+                                <td>'.$rows['usuario_nombre'].' '.$rows['usuario_apellido'].'</td>
+                                <td>'.$rows['usuario_telefono'].'</td>
+                                <td>'.$rows['usuario_usuario'].'</td>
+                                <td>'.$rows['usuario_email'].'</td>
+                                <td>
+                                    <a href="<?php echo SERVERURL; ?>user-update/" class="btn btn-success">
+                                        <i class="fas fa-sync-alt"></i>	
+                                    </a>
+                                </td>
+                                <td>
+                                    <form action="">
+                                        <button type="button" class="btn btn-warning">
+                                            <i class="far fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>';
+                    $contador ++;
+                }
+            } else {
+                if ( $total >= 1 ) {
+                    $tabla.='<tr class="text-center" >
+                                <td colspan=9>
+                                    <a href="'.$url.'" class="btn btn-raised btn-primary btn-sm">Haga click acá para recargar el listado</a>
+                                </td>
+                            </tr>';
+                } else {
+                    $tabla.='<tr class="text-center" >
+                                <td colspan=9>No hay registros en el sistema</td>
+                            </tr>';
+                }
+            }
+            
+            $tabla .= '         </tbody>
+                            </table>
+                        </div>';
+            
+            if ( $total >= 1 && $pagina <= $n_paginas ) {
+               # $tabla .= mainModel::paginador_tablas($pagina, $n_paginas, $url, 5);
+            }
+            return $tabla;
         } /** Fin del controlador  */
     }
