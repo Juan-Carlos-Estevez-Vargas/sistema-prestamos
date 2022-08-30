@@ -335,7 +335,7 @@
                             </table>
                         </div>';
             
-            if ( $total >= 1 ) {
+            if ( $total >= 1 && $pagina <= $n_paginas ) {
                 $tabla.="<p class='text-right'>Mostrando usuario ".$reg_inicio." al ".$reg_final." de un total de ".$total." </p>";
             }
             
