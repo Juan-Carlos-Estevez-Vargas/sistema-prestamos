@@ -1,3 +1,12 @@
+<?php 
+    if ( $login_controlador->encryption($_SESSION["id_spm"]) != $pagina[1] ) {
+        if ( $_SESSION["privilegio_spm"] != 1 ) {
+            echo $login_controlador->forzar_cierre_sesion_controlador();
+            exit();
+        }
+    }
+?>
+
 <!-- Page header -->
 <div class="full-box page-header">
     <h3 class="text-left">
@@ -8,22 +17,32 @@
     </p>
 </div>
 
-<div class="container-fluid">
-    <ul class="full-box list-unstyled page-nav-tabs">
-        <li>
-            <a href="<?php echo SERVERURL; ?>user-new/"><i class="fas fa-plus fa-fw"></i> &nbsp; NUEVO USUARIO</a>
-        </li>
-        <li>
-            <a href="<?php echo SERVERURL; ?>user-list/"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE USUARIOS</a>
-        </li>
-        <li>
-            <a href="<?php echo SERVERURL; ?>user-search/"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR USUARIO</a>
-        </li>
-    </ul>	
-</div>
+<?php if ( $_SESSION["privilegio_spm"] == 1 ) { ?>
+    <div class="container-fluid">
+        <ul class="full-box list-unstyled page-nav-tabs">
+            <li>
+                <a href="<?php echo SERVERURL; ?>user-new/"><i class="fas fa-plus fa-fw"></i> &nbsp; NUEVO USUARIO</a>
+            </li>
+            <li>
+                <a href="<?php echo SERVERURL; ?>user-list/"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE USUARIOS</a>
+            </li>
+            <li>
+                <a href="<?php echo SERVERURL; ?>user-search/"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR USUARIO</a>
+            </li>
+        </ul>	
+    </div>
+<?php } ?>
 
 <!-- Content -->
 <div class="container-fluid">
+    <?php
+        require_once "./controladores/usuarioControlador.php";
+        $instancia_usuario = new usuarioControlador();
+        $datos_usuario = $instancia_usuario->datos_usuario_controlador("Unico", $pagina[1]);
+
+        if ( $datos_usuario->rowCount() == 1 ) {
+            $campos = $datos_usuario->fetch();
+    ?>
     <form action="" class="form-neon" autocomplete="off">
         <fieldset>
             <legend><i class="far fa-address-card"></i> &nbsp; Información personal</legend>
@@ -157,10 +176,11 @@
             <button type="submit" class="btn btn-raised btn-success btn-sm"><i class="fas fa-sync-alt"></i> &nbsp; ACTUALIZAR</button>
         </p>
     </form>
-
+    <?php } else { ?>
     <div class="alert alert-danger text-center" role="alert">
         <p><i class="fas fa-exclamation-triangle fa-5x"></i></p>
         <h4 class="alert-heading">¡Ocurrió un error inesperado!</h4>
         <p class="mb-0">Lo sentimos, no podemos mostrar la información solicitada debido a un error.</p>
     </div>
+    <?php } ?>
 </div>
