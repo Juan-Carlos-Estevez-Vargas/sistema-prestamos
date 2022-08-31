@@ -337,11 +337,89 @@
             
             if ( $total >= 1 && $pagina <= $n_paginas ) {
                 $tabla.="<p class='text-right'>Mostrando usuario ".$reg_inicio." al ".$reg_final." de un total de ".$total." </p>";
+                # $tabla .= mainModel::paginador_tablas($pagina, $n_paginas, $url, 5);
             }
-            
-            if ( $total >= 1 && $pagina <= $n_paginas ) {
-               # $tabla .= mainModel::paginador_tablas($pagina, $n_paginas, $url, 5);
-            }
+
             return $tabla;
+        } /** Fin del controlador  */
+
+        /**
+         * Controlador encargado de eliminar usuarios del sistema.
+         */
+        public function eliminar_usuario_controlador() {
+
+            /** Recibiendo el id a eliminar */
+            $id = mainModel::decryption($_POST["usuario_id_del"]);
+            $id = mainModel::limpiar_cadena($id);
+
+            /** El id == 1 no se puede eliminar porque es el super administrador. */
+            if ($id == 1) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "No podemos eliminar el usuario principal del sistema",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            }
+
+            /** Comprobando el usuario en la base de datos. */
+            $check_usuario = mainModel::ejecutar_consulta_simple("SELECT usuario_id FROM usuario WHERE usuario_id = '$id'");
+            if ( $check_usuario->rowCount() <= 0 ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "El usuario que intenta eliminar no existe en el sistema",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            }
+
+            /** Comprobando los préstamos asociados al usuario a eliminar. */
+            $check_prestamos = mainModel::ejecutar_consulta_simple("SELECT usuario_id FROM prestamo WHERE usuario_id = '$id' LIMIT 1");
+            if ( $check_prestamos->rowCount() > 0 ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "No podemos eliminar el usuario seleccionado puesto que tiene préstamos asociados, recomendamos deshabilitar el usuario si ya no será utilizado",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            }
+
+            /** Comprobando el privilegio del usuario que desea ejecutar la eliminación de un registro */
+            session_start(["name"=>"SPM"]);
+            if ( $_SESSION["privilegio_spm"] != 1 ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "No tienes los permisos necesarios para ejecutar esta acción",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            }
+
+            /** Eliminando usuario del sistema luego de todas las comprobaciones */
+            $eliminar_usuario = usuarioModelo::eliminar_usuario_modelo($id);
+            if ( $eliminar_usuario->rowCount() == 1 ) {
+                $alerta = [
+                    "Alerta" => "recargar",
+                    "Titulo" => "Usuario eliminado",
+                    "Texto" => "El usuario ha sido eliminado del sistema exitosamente",
+                    "Tipo" => "success"
+                ];
+            } else {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "No se pudo eliminar el usuario, intente nuevamente",
+                    "Tipo" => "error"
+                ];
+            }
+            echo json_encode($alerta);
         } /** Fin del controlador  */
     }
