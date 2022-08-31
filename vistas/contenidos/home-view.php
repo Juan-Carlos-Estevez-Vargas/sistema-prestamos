@@ -53,12 +53,17 @@
         </div>
     </a>
 
-    <?php if ( $_SESSION["privilegio_spm"] == 1 ) { ?>
+    <?php 
+        if ( $_SESSION["privilegio_spm"] == 1 ) { 
+            require_once "./controladores/usuarioControlador.php";
+            $instancia_usuario = new usuarioControlador();
+            $total_usuarios = $instancia_usuario->datos_usuario_controlador("Conteo", 0);
+    ?>
     <a href="<?php echo SERVERURL; ?>user-list/" class="tile">
         <div class="tile-tittle">Usuarios</div>
         <div class="tile-icon">
             <i class="fas fa-user-secret fa-fw"></i>
-            <p>50 Registrados</p>
+            <p><?php echo $total_usuarios->rowCount(); ?> Registrados</p>
         </div>
     </a>
     <?php } ?>
