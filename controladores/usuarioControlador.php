@@ -422,4 +422,6 @@
             }
             echo json_encode($alerta);
         } /** Fin del controlador  */
+
+        
     }

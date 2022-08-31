@@ -28,11 +28,27 @@
         } /** Fin modelo agregar usuario */
 
         /**
-         * Se enecarga de eliminar un registro del sistema.
+         * Se encarga de eliminar un registro del sistema.
          */
         protected static function eliminar_usuario_modelo($id) {
             $sql = mainModel::conectar()->prepare("DELETE FROM usuario WHERE usuario_id = :id");
             $sql->bindParam(":id", $id);
+            $sql->execute();
+            return $sql;
+        } /** Fin modelo eliminar usuario */
+
+        /**
+         * Se encarga de validar los datos del usuario logueado en el sistema.
+         */
+        protected static function datos_usuario_modelo($tipo, $id) {
+
+            if ( $tipo == "Unico" ) {
+                $sql = mainModel::conectar()->prepare("SELECT * FROM usuario WHERE usuario_id = :id");
+                $sql->bindParam(":id", $id);
+            } elseif ( $tipo == "Conteo" ) {
+                $sql = mainModel::conectar()->prepare("SELECT usuario_id FROM usuario WHERE usuario_id != '1'");
+            }
+            
             $sql->execute();
             return $sql;
         } /** Fin modelo eliminar usuario */
