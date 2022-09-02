@@ -668,5 +668,79 @@
                     exit();
                 }
             }
+
+            /** Comprobando el formato del email. */
+            if ( $email != $campos["usuario_email"] && $email != "" ) {
+                if ( filter_var($email, FILTER_VALIDATE_EMAIL) ) {
+                    $check_email = mainModel::ejecutar_consulta_simple("SELECT usuario_email FROM usuario WHERE usuario_email = '$email'");
+                    if ( $check_email->rowCount() > 0 ) {
+                        $alerta = [
+                            "Alerta" => "simple",
+                            "Titulo" => "Ocurrió un error inesperado",
+                            "Texto" => "El nuevo EMAIL indicado ya se encuentra registrado en el sistema",
+                            "Tipo" => "error"
+                        ];
+                        echo json_encode($alerta);
+                        exit();
+                    }
+                } else {
+                    $alerta = [
+                        "Alerta" => "simple",
+                        "Titulo" => "Ocurrió un error inesperado",
+                        "Texto" => "Ha ingresado un correo electrónico NO válido",
+                        "Tipo" => "error"
+                    ];
+                    echo json_encode($alerta);
+                    exit();
+                }
+            }
+
+            /** Comprobando la nueva contraseña y el repetir nueva contraseña. */
+            if ( $_POST["usuario_clave_nueva_1"] != "" || $_POST["usuario_clave_nueva_2"] != "" ) {
+                if ( $_POST["usuario_clave_nueva_1"] != $_POST["usuario_clave_nueva_2"] ) {
+                    $alerta = [
+                        "Alerta" => "simple",
+                        "Titulo" => "Ocurrió un error inesperado",
+                        "Texto" => "Las nuevas CLAVES o CONTRASEÑAS ingresadas NO coinciden",
+                        "Tipo" => "error"
+                    ];
+                    echo json_encode($alerta);
+                    exit();
+                } else {
+                    if ( mainModel::verificar_datos("[a-zA-Z0-9$@.-]{7,100}", $_POST["usuario_clave_nueva_1"] ) 
+                        || mainModel::verificar_datos("[a-zA-Z0-9$@.-]{7,100}", $_POST["usuario_clave_nueva_2"]) ) {
+                            $alerta = [
+                                "Alerta" => "simple",
+                                "Titulo" => "Ocurrió un error inesperado",
+                                "Texto" => "Las nuevas CLAVES o CONTRASEÑAS NO coinciden con el formato solicitado",
+                                "Tipo" => "error"
+                            ];
+                            echo json_encode($alerta);
+                            exit();
+                        }
+                    $clave = mainModel::encryption($_POST["usuario_clave_nueva_1"]);
+                }
+            } else $clave = $campos["usuario_clave"];
+
+            /** Comprobando las credenciales para actualizar los datos del usuario en el sistema. */
+            if ( $tipo_cuenta == "Propia" ) {
+                $check_cuenta = mainModel::ejecutar_consulta_simple("SELECT usuario_id FROM usuario 
+                    WHERE usuario_usuario = '$admin_usuario' AND usuario_clave = '$admin_clave'
+                    AND usuario_id = '$id'");
+            } else {
+                session_start(['name'=>'SPM']);
+                if ( $_SESSION["privilegio_spm"] != 1 ) {
+                    $alerta = [
+                        "Alerta" => "simple",
+                        "Titulo" => "Ocurrió un error inesperado",
+                        "Texto" => "No cuentas con los permisos necesarios para ejecutar esta acción",
+                        "Tipo" => "error"
+                    ];
+                    echo json_encode($alerta);
+                    exit();
+                }
+                $check_cuenta = mainModel::ejecutar_consulta_simple("SELECT usuario_id FROM usuario 
+                    WHERE usuario_usuario = '$admin_usuario' AND usuario_clave = '$admin_clave'");
+            }
         } /** Fin del controlador  */
     }
