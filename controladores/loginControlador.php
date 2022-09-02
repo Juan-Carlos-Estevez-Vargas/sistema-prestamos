@@ -1,4 +1,5 @@
 <?php
+    /** Incluyendo el modelo con las operaciones CRUD. */
     if ($peticionAjax) require_once "../modelos/loginModelo.php";
     else require_once "./modelos/loginModelo.php";
 
@@ -16,12 +17,9 @@
             $usuario = mainModel::limpiar_cadena($_POST["usuario_login"]);
             $clave = mainModel::limpiar_cadena($_POST["clave_login"]);
 
-            echo $usuario;
-            echo $clave;
-
             /**
              * Comprobando que los datos requeridos del formulario 'login-view.php' 
-             * no estén vacíos
+             * no estén vacíos, en caso de estarlo se envía una alerta de error.
              */ 
             if ( $usuario == "" || $clave == "" ) {
                echo "<script>
@@ -68,6 +66,7 @@
              */
             $clave_encriptada = mainModel::encryption($clave);
 
+            /** Datos para iniciar la sesión en el sistema. */
             $datos_login = [
                 "usuario" => $usuario,
                 "clave" => $clave_encriptada
@@ -99,7 +98,7 @@
                     </script>";
                 exit();
             }
-        }
+        } /** Fin de la funcionalidad de inicio de sesión. */
 
         /**
          * Controlador encargado de forzar el cierre de sesión en el sistema.
@@ -135,6 +134,6 @@
                 ];
             }
             echo json_encode($alerta);
-        }
+        } /** Fin del controlador. */
 
     }

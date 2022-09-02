@@ -1,3 +1,7 @@
+<!-- 
+    Este archivo contiene constantes globales de conexión a la base de datos y 
+    servidores.
+ -->
 <?php
     const SERVER = "localhost";
     const DB = "prestamos";

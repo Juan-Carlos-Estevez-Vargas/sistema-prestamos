@@ -1,7 +1,12 @@
+<!-- 
+    Este archivo se encarga de procesar las operaciones CRUD de los usuarios 
+    por medio de peticiones AJAX.
+ -->
 <?php
     $peticionAjax = true;
     require_once "../config/app.php";
 
+    /** Si viene definido el dni y el id del usuario a manipular. */
     if ( isset($_POST["usuario_dni_reg"]) || isset($_POST["usuario_id_del"]) ) {
 
         /**
@@ -23,7 +28,7 @@
         if ( isset($_POST["usuario_id_del"]) ) {
             echo $ins_usuario->eliminar_usuario_controlador();
         }
-    } else {
+    } else { /** Vaciando y destruyendo la sesión. */
         session_start(['name'=>'SPM']);
         session_unset();
         session_destroy();

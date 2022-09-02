@@ -1,4 +1,5 @@
 <?php
+    /** Incluyendo el modelo con las operaciones CRUD. */
     if ($peticionAjax) require_once "../modelos/usuarioModelo.php";
     else require_once "./modelos/usuarioModelo.php";
 
@@ -178,7 +179,7 @@
                 }
             }
 
-            /** Comprobando la contraseña y repetir contraseña. */
+            /** Comprobando la contraseña y repetir contraseña (que sean iguales). */
             if ( $clave1 != $clave2 ) {
                 $alerta = [
                     "Alerta" => "simple",
@@ -190,7 +191,7 @@
                 exit();
             } else $clave = mainModel::encryption($clave1);
 
-            /** Comprobando privilegio */
+            /** Comprobando privilegio (que esté dentro del rango permitido)*/
             if ( $privilegio < 1 || $privilegio > 3 ) {
                 $alerta = [
                     "Alerta" => "simple",
@@ -201,8 +202,11 @@
                 echo json_encode($alerta);
                 exit();
             }
-            # ---------- Fin de la validación de datos post inserción. ------------- #
+            # ---------- Fin de la validación de datos pre inserción. ------------- #
 
+            /** 
+             * Array de datos con la información a insertar. 
+             */
             $datos_usuario_reg = [
                 "DNI" => $dni,
                 "nombre" => $nombre,
@@ -216,6 +220,9 @@
                 "privilegio" => $privilegio
             ];
 
+            /**
+             * Registrando el usuario en el sistema.
+             */
             $agregar_usuario = usuarioModelo::agregar_usuario_modelo($datos_usuario_reg);
 
             if ( $agregar_usuario->rowCount() == 1 ) {
@@ -238,9 +245,13 @@
 
         /**
          * Controlador encargado de paginar o listar los usuarios registrados en
-         * el sistema
+         * el sistema.
          */
         public function paginador_usuario_controlador($pagina, $registros, $privilegio, $id, $url, $busqueda) {
+            
+            /** 
+             * Limpiando los datos de posible inyección SQL. 
+             */
             $pagina = mainModel::limpiar_cadena($pagina);
             $registros = mainModel::limpiar_cadena($registros);
             $privilegio = mainModel::limpiar_cadena($privilegio);
@@ -252,6 +263,9 @@
             $pagina = ( isset($pagina) && $pagina > 0 ) ? (int) $pagina : 1;
             $inicio = ( $pagina > 0 ) ? (($pagina * $registros) - $registros) : 0;
 
+            /**
+             * Si viene definido un parámetro de búsqueda de registros.
+             */
             if ( isset($busqueda) && $busqueda != "" ) {
                 $consulta = "SELECT SQL_CALC_FOUND_ROWS * FROM usuario WHERE ((usuario_id != '$id' 
                             AND usuario_id != '1') AND (usuario_dni LIKE '%$busqueda%' 
@@ -264,15 +278,23 @@
                             AND usuario_id != '1' ORDER BY usuario_nombre ASC LIMIT $inicio, $registros";
             }
 
+            /** 
+             * Ejecutando la consulta sql.
+             */
             $conexion = mainModel::conectar();
             $datos = $conexion->query($consulta);
             $datos = $datos->fetchAll();
 
+            /** Total de filas encontradas. */
             $total = $conexion->query("SELECT FOUND_ROWS()");
             $total = (int) $total->fetchColumn();
 
+            /** Calculando el número de páginas. */
             $n_paginas = ceil($total / $registros);
 
+            /**
+             * Listando los registros en el sistema.
+             */
             $tabla .= '<div class="table-responsive">
                         <table class="table table-dark table-sm">
                             <thead>
@@ -364,7 +386,7 @@
                 exit();
             }
 
-            /** Comprobando el usuario en la base de datos. */
+            /** Comprobando el usuario en la base de datos (que exista). */
             $check_usuario = mainModel::ejecutar_consulta_simple("SELECT usuario_id FROM usuario WHERE usuario_id = '$id'");
             if ( $check_usuario->rowCount() <= 0 ) {
                 $alerta = [

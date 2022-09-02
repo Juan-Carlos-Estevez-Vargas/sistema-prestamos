@@ -14,7 +14,7 @@
             $conexion = new PDO(SGBD, USER, PASS);
             $conexion->exec("SET CHARACTER SET utf8");
             return $conexion;
-        }
+        } /** Fin del modelo */
 
         /**
          * Función para realizar o ejecutar consultas SQL simples.
@@ -23,7 +23,7 @@
             $sql = self::conectar()->prepare($consulta);
             $sql->execute();
             return $sql;
-        }
+        } /** Fin del modelo */
 
         /**
          * Se encarga de encriptar textos planos (parámetros, id's, etc).
@@ -35,7 +35,7 @@
             $output = openssl_encrypt($string, METHOD, $key, 0, $iv);
             $output = base64_encode($output);
             return $output;
-        }
+        } /** Fin del modelo */
 
         /**
          * Se encarga de desencriptar textos planos (parámetros, id's, etc).
@@ -45,7 +45,7 @@
             $iv = substr(hash('sha256', SECRET_ID), 0, 16);
             $output = openssl_decrypt(base64_decode($string), METHOD, $key, 0, $iv);
             return $output;
-        }
+        } /** Fin del modelo */
 
         /**
          * Genera códigos aleatorios.
@@ -56,7 +56,7 @@
                 $letra .= $aleatorio;
             }
             return $letra."-".$numero;
-        }
+        } /** Fin del modelo */
 
         /**
          * Se encarga de limpiar cadenas de caracteres para evitar ataques de 
@@ -91,14 +91,14 @@
             $cadena = stripslashes($cadena); # Elimina slash invertidos.
             $cadena = trim($cadena); # Elimina espacios innecesarios.
             return $cadena;
-        }
+        } /** Fin del modelo */
 
         /**
          * Función para validar datos.
          */
         protected static function verificar_datos($filtro, $cadena) {
             return preg_match("/^".$filtro."$/", $cadena) ? false : true;
-        }
+        } /** Fin del modelo */
 
         /**
          * Verifica y valida las fechas.
@@ -106,7 +106,7 @@
         protected static function verificar_fecha($fecha) {
             $valores = explode("-", $fecha);
             return count($valores) == 3 && checkdate($valores[1], $valores[2], $valores[3]) ? false : true;
-        }
+        } /** Fin del modelo */
 
         /**
          * Se encarga de generar la paginación entre las tablas, esto mediante 
@@ -173,6 +173,6 @@
             $tabla .= '</ul>
                     </nav>';
             return $tabla;
-        }
+        } /** Fin del modelo */
 
     }
