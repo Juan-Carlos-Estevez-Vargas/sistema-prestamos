@@ -454,4 +454,70 @@
             $id = mainModel::limpiar_cadena($id);
             return usuarioModelo::datos_usuario_modelo($tipo, $id);
         } /** Fin del controlador  */
+
+        /**
+         * Controlador encargado de actualizar usuarios en el sistema.
+         */
+        public function actualizar_usuario_controlador() {
+            /** Recibiendo el id del usuario a actualizar. */
+            $id = mainModel::decryption($_POST["usuario_id_up"]);
+            $id = mainModel::limpiar_cadena($id);
+
+            /** Comprobando el usuario mediante el id en la base de datos. */
+            $check_user = mainModel::ejecutar_consulta_simple("SELECT * FROM usuario WHERE usuario_id = '$id'");
+
+            if ( $check_user->rowCount() <= 0 ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "No hemos encontrado el usuario en el sistema",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            } else $campos = $check_user->fecth();
+
+            /** Obteniendo y limpiando datos traidos del formulario 'user-update-view.php' */
+            $dni = mainModel::limpiar_cadena($_POST["usuario_dni_up"]);
+            $nombre = mainModel::limpiar_cadena($_POST["usuario_nombre_up"]);
+            $apellido = mainModel::limpiar_cadena($_POST["usuario_apellido_up"]);
+            $telefono = mainModel::limpiar_cadena($_POST["usuario_telefono_up"]);
+            $direccion = mainModel::limpiar_cadena($_POST["usuario_direccion_up"]);
+            $usuario = mainModel::limpiar_cadena($_POST["usuario_usuario_up"]);
+            $email = mainModel::limpiar_cadena($_POST["usuario_email_up"]);
+
+            /** Obteniendo el estado en caso de estar definido. */
+            if ( isset($_POST["usuario_estado_up"]) ) $estado = mainModel::limpiar_cadena($_POST["usuario_estado_up"]);
+            else $estado = $campos["usuario_estado"];
+
+            /** Obteniendo el privilegio en caso de estar definido. */
+            if ( isset($_POST["usuario_privilegio_up"]) ) $privilegio = mainModel::limpiar_cadena($_POST["usuario_privilegio_up"]);
+            else $privilegio = $campos["usuario_privilegio"];
+
+            /** Obteniendo y limpiando los datos del usuario administrador que va a ejecutar la actualización. */
+            $admin_usuario = mainModel::limpiar_cadena($_POST["usuario_admin"]);
+            $admin_clave = mainModel::limpiar_cadena($_POST["clave_admin"]);
+
+            /** Encriptando la clave del administrador que desea ejecutar la acción de actualización de datos. */
+            $admin_clave = mainModel::encryption($admin_clave);
+
+            /** Obteniendo y limpiando el tipo cuenta, puede ser propia del admin o impropia de otro registro. */
+            $tipo_cuenta = mainModel::limpiar_cadena($_POST["tipo_cuenta"]);
+
+            /**
+             * Comprobando que los datos requeridos del formulario 'user-update-view.php' 
+             * no estén vacíos
+             */ 
+            if ( $dni == "" || $nombre == "" || $apellido == "" || $usuario == "" || $admin_usuario == "" || $admin_clave == "" ) {
+                $alerta = [
+                    "Alerta" => "simple",
+                    "Titulo" => "Ocurrió un error inesperado",
+                    "Texto" => "No has llenado todos los campos requeridos",
+                    "Tipo" => "error"
+                ];
+                echo json_encode($alerta);
+                exit();
+            }
+
+        } /** Fin del controlador  */
     }
