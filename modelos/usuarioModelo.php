@@ -52,4 +52,33 @@
             $sql->execute();
             return $sql;
         } /** Fin modelo eliminar usuario */
+
+        /**
+         * Se encarga de validar los datos del usuario logueado en el sistema.
+         */
+        protected static function actualizar_usuario_modelo($datos) {
+
+            $sql = mainModel::conectar()->prepare(
+                "UPDATE usuario SET usuario_dni = :dni, usuario_nombre = :nombre, 
+                    usuario_apellido = :apellido, usuario_telefono = :telefono,
+                    usuario_direccion = :direccion, usuario_email = :email,
+                    usuario_usuario = :usuario, usuario_clave = :clave, usuario_estado = :estado.
+                    usuario_privilegio = :privilegio WHERE usuario_id = :id");
+
+            $sql->bindParam(":dni", $datos["dni"]);
+            $sql->bindParam(":nombre", $datos["nombre"]);
+            $sql->bindParam(":apellido", $datos["apellido"]);
+            $sql->bindParam(":telefono", $datos["telefono"]);
+            $sql->bindParam(":direccion", $datos["direccion"]);
+            $sql->bindParam(":email", $datos["email"]);
+            $sql->bindParam(":usuario", $datos["usuario"]);
+            $sql->bindParam(":clave", $datos["clave"]);
+            $sql->bindParam(":estado", $datos["estado"]);
+            $sql->bindParam(":privilegio", $datos["privilegio"]);
+            $sql->bindParam(":id", $datos["id"]);
+
+            $sql->execute();
+            return $sql;
+
+        } /** Fin modelo eliminar usuario */
     }
